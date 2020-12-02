@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Observable;
 
@@ -34,6 +35,14 @@ public class Repository extends Observable {
 		csvHeaders.add("Program and Plan");
 		csvHeaders.add("Academic Level");
 		csvHeaders.add("ASURITE");
+	}
+
+	public List<Student> getStudentList() {
+		return students;
+	}
+
+	public List<String> getCsvHeaders() {
+		return csvHeaders;
 	}
 
 	public void displayStudents() {
@@ -80,14 +89,16 @@ public class Repository extends Observable {
 		}
 	}
 
-	public void addAttendance(FileInputStream fis, String dateHeader) throws Exception {
+	public List<String> addAttendance(FileInputStream fis, String dateHeader) throws Exception {
 		Reader fr = new InputStreamReader(fis, "UTF-8");
-		addAttendance(fr, dateHeader);
+		return addAttendance(fr, dateHeader);
 	}
 
-	public void addAttendance(Reader fr, String dateHeader) throws Exception {
+	public List<String> addAttendance2(Reader fr, String dateHeader) throws Exception {
+		List<String> messages = new ArrayList<String>();
 		csvHeaders.add(dateHeader);
 		List<StudentAttendance> listOfAttendance = new ArrayList<StudentAttendance>();
+		List<StudentAttendance> listOfAdditionalAttendees = new ArrayList<StudentAttendance>();
 		try {
 			List<String> values = CSV_Helper.parseLine(fr);
 			while (values != null) {
@@ -112,7 +123,18 @@ public class Repository extends Observable {
 					studentAtt.setStudent(oldStudent);
 					students.set(oldIndex, studentAtt);
 				} else {
+					listOfAdditionalAttendees.add(studentAtt);
 					numOfNewStudents++;
+				}
+			}
+
+			messages.add(("Data added for " + (listOfAttendance.size() - listOfAdditionalAttendees.size())
+					+ " users in the roster.\n"));
+
+			if (listOfAdditionalAttendees.size() > 0) {
+				messages.add((listOfAdditionalAttendees.size() + " additional attendees was/were found"));
+				for (StudentAttendance studentAtt : listOfAdditionalAttendees) {
+					messages.add((studentAtt.asurite + ", connected for " + studentAtt.time + " minute/s.\n"));
 				}
 			}
 
@@ -123,7 +145,59 @@ public class Repository extends Observable {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
+		return messages;
+	}
 
+	public List<String> addAttendance(Reader fr, String dateHeader) throws Exception {
+		List<String> messages = new ArrayList<String>();
+		List<StudentAttendance> listOfAdditionalAttendees = new ArrayList<StudentAttendance>();
+		csvHeaders.add(dateHeader);
+		HashMap<String, String> dataAddedFor = new HashMap<String, String>();
+
+		for (int index = 0; index < students.size(); index++) {
+			Student student = students.get(index);
+			List<String> list = Arrays.asList(student.asurite.toString(), "0");
+			StudentAttendance sta = new StudentAttendance(student, list);
+			students.set(index, sta);
+		}
+
+		try {
+			List<String> values = CSV_Helper.parseLine(fr);
+			while (values != null) {
+				int oldIndex = findStudentIndexByAsurite(values.get(0));
+				StudentAttendance sta = null;
+				if (oldIndex != -1) {
+					sta = (StudentAttendance) students.get(oldIndex);
+					if (values.get(1) != null) {
+						int time = Integer.parseInt(values.get(1));
+						sta.incrementTime(time);
+						if (!dataAddedFor.containsKey(sta.asurite) && time > 0) {
+							dataAddedFor.put(sta.asurite, values.get(1));
+						}
+					}
+				} else {
+					listOfAdditionalAttendees.add(new StudentAttendance(values));
+					numOfNewStudents++;
+				}
+				values = CSV_Helper.parseLine(fr);
+			}
+			fr.close();
+
+			messages.add(("Data added for " + dataAddedFor.size() + " users in the roster.\n"));
+			if (listOfAdditionalAttendees.size() > 0) {
+				messages.add((listOfAdditionalAttendees.size() + " additional attendees was/were found:"));
+				for (StudentAttendance studentAtt : listOfAdditionalAttendees) {
+					messages.add((studentAtt.asurite + ", connected for " + studentAtt.time + " minute/s.\n"));
+				}
+			}
+
+			setChanged();
+			notifyObservers();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+		return messages;
 	}
 
 	private int findStudentAttendanceIndexByAsurite(List<StudentAttendance> listOfAttendance, String asurite) {
@@ -198,11 +272,13 @@ public class Repository extends Observable {
 		return retVal;
 	}
 
-	public void saveDataToFile() {
+	public String saveDataToFile() {
+		String filename = "";
 		try {
 			Date d = new Date();
 			SimpleDateFormat dt = new SimpleDateFormat("yyyyy-mm-dd hh:mm:ss");
-			File csvFile = new File("./roster" + dt.format(d));
+			filename = "Roster_" + dt.format(d) + ".csv";
+			File csvFile = new File("./" + filename);
 
 			if (csvFile.createNewFile()) {
 				System.out.println("File created: " + csvFile.getName());
@@ -229,6 +305,7 @@ public class Repository extends Observable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return filename;
 	}
 
 }

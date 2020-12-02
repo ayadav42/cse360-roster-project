@@ -16,31 +16,31 @@ public abstract class Student {
 
 	public void setStudentData(String csr) { // comma separated rows
 		String[] arr = csr.split(",");
-		this.id = arr[0];
-		this.firstName = arr[1];
-		this.lastName = arr[2];
-		this.programAndPlan = arr[3];
-		this.academicLevel = arr[4];
-		this.asurite = arr[5];
+		this.id = arr[0].trim();
+		this.firstName = arr[1].trim();
+		this.lastName = arr[2].trim();
+		this.programAndPlan = arr[3].trim();
+		this.academicLevel = arr[4].trim();
+		this.asurite = arr[5].trim();
 	}
 
 	public void setStudentData(List<String> list) {
-		this.id = list.get(0);
-		this.firstName = list.get(1);
-		this.lastName = list.get(2);
-		this.programAndPlan = list.get(3);
-		this.academicLevel = list.get(4);
-		this.asurite = list.get(5);
+		this.id = list.get(0).trim();
+		this.firstName = list.get(1).trim();
+		this.lastName = list.get(2).trim();
+		this.programAndPlan = list.get(3).trim();
+		this.academicLevel = list.get(4).trim();
+		this.asurite = list.get(5).trim();
 	}
 
 	public void setStudentData(String id, String firstName, String lastName, String programAndPlan,
 			String academicLevel, String asurite) {
-		this.id = id;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.programAndPlan = programAndPlan;
-		this.academicLevel = academicLevel;
-		this.asurite = asurite;
+		this.id = id.trim();
+		this.firstName = firstName.trim();
+		this.lastName = lastName.trim();
+		this.programAndPlan = programAndPlan.trim();
+		this.academicLevel = academicLevel.trim();
+		this.asurite = asurite.trim();
 	}
 
 	public String toString() {
@@ -48,7 +48,7 @@ public abstract class Student {
 				+ this.academicLevel + "," + this.asurite;
 	}
 
-	public List<String> toList(){
+	public List<String> toList() {
 		List<String> list = new ArrayList<String>();
 		list.add(this.id);
 		list.add(this.firstName);

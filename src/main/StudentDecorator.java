@@ -7,12 +7,12 @@ public abstract class StudentDecorator extends Student {
 	protected Student student;
 	
 	public void add(Student student) {
-		this.id = student.id;
-		this.firstName = student.firstName;
-		this.lastName = student.lastName;
-		this.programAndPlan = student.programAndPlan;
-		this.academicLevel = student.academicLevel;
-		this.asurite = student.asurite;
+		this.id = student.id.trim();
+		this.firstName = student.firstName.trim();
+		this.lastName = student.lastName.trim();
+		this.programAndPlan = student.programAndPlan.trim();
+		this.academicLevel = student.academicLevel.trim();
+		this.asurite = student.asurite.trim();
 		this.student = student;
 	}
 	
