@@ -42,7 +42,7 @@ public class PlotData extends JFrame {
 		setContentPane(panel);
 	}
 
-	private double calculatePercentAttendance(double time) {
+	public double calculatePercentAttendance(double time) {
 		System.out.println("Time: " + time);
 		double percentAttendance;
 		if (time >= 75) {

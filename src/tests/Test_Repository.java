@@ -34,8 +34,8 @@ public class Test_Repository {
 	String[][] arr2 = { { "123", "Amar", "Yadav", "SER", "Graduate", "ayadav42", "70", "40" },
 			{ "345", "Danielle", "Dupont", "CSE", "Undergrad", "dmdupont52", "60", "80" },
 			{ "456", "Taylor", "Northcott", "CE", "Undergraduate", "tnorthcott45", "25", "0" },
-			{ "567", "Abi", "Mcgee", "bs", "Undergraduate", "amcgee21", "3", null },
-			{ "678", "Abby", "Steinman", "BSE", "Undergraduate", "asteinman17", "25", null }, };
+			{ "567", "Abi", "Mcgee", "bs", "Undergraduate", "amcgee21", "3", "0" },
+			{ "678", "Abby", "Steinman", "BSE", "Undergraduate", "asteinman17", "25", "0" }, };
 
 	@Test
 	public void testRepositoryAddStudents() throws Exception {
